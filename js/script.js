@@ -144,29 +144,102 @@ function loadPageContent(path, pushState = true) {
         });
 }
 
+// /js/script.js
+
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('script.js loaded and DOM content is ready!');
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
 
-    // Initial call for nav links (if any exist before partials are loaded, e.g., logo)
-    // This is primarily for elements that might be present in index.html directly
-    // before header partial is loaded.
-    window.initializeNavLinks();
+    if (mobileMenuButton && mobileMenu) {
+        const navLinks = mobileMenu.querySelectorAll('a');
 
-    // Initial call for scroll animations on the very first page load
-    if (typeof initializeScrollAnimations === 'function') {
-        initializeScrollAnimations();
-    } else {
-        console.warn("initializeScrollAnimations function not found. Skipping initial call.");
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = mobileMenuButton.querySelector('i');
+            if (mobileMenu.classList.contains('hidden')) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                const icon = mobileMenuButton.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
+        });
     }
 
-    // Handle browser back/forward buttons (PopState event)
-    window.addEventListener('popstate', (event) => {
-        // Get the path from the history state or the current URL if state is null
-        const path = event.state && event.state.path ? event.state.path : window.location.pathname;
-        loadPageContent(path, false); // Load content, but don't push a new state
-    });
+    // Client-side navigation handler
+    document.body.addEventListener('click', async (event) => {
+        const navLink = event.target.closest('.nav-link');
+        if (navLink) {
+            event.preventDefault(); // Prevent default link behavior
+            const path = navLink.dataset.path; // Gets the path from data-path attribute
 
-    // Initial `history.replaceState` for the current page when the script first loads.
-    // This ensures `popstate` works correctly if the user navigates back to the initial page.
-    history.replaceState({ path: window.location.pathname }, document.title, window.location.pathname);
+            if (path) {
+                try {
+                    const response = await fetch(path);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const html = await response.text();
+
+                    // Use DOMParser to parse the fetched HTML string into a DOM document
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    // Find the current <main> element in the live DOM
+                    const currentMain = document.querySelector('main');
+                    // Find the new <main> element from the parsed fetched HTML
+                    const newMain = doc.querySelector('main');
+
+                    if (currentMain && newMain) {
+                        // Replace the old <main> element with the new one
+                        currentMain.replaceWith(newMain);
+                    } else {
+                        console.error('Main element not found in current document or fetched content.');
+                        return; // Stop execution if main element isn't found
+                    }
+
+                    // Update page title
+                    const newTitle = doc.querySelector('title') ? doc.querySelector('title').textContent : 'Aivariz';
+                    document.title = newTitle;
+
+                    // Re-load partials (header and footer) for the new page content
+                    // This function is exposed globally by load_partials.js
+                    if (window.loadAllPagePartials) {
+                        window.loadAllPagePartials();
+                    } else {
+                        console.warn('loadAllPagePartials function not found. Partials might not load.');
+                    }
+
+                    // Re-initialize AOS (Animate On Scroll) for the new content
+                    // Calling AOS.init() again will scan the newly inserted DOM for elements with data-aos attributes
+                    if (typeof AOS !== 'undefined') {
+                        AOS.init({
+                            duration: 800, // values from 0 to 3000, with step 50ms
+                            once: true, // whether animation should happen only once - while scrolling down
+                        });
+                    } else {
+                        console.warn('AOS library not found. Animations might not work.');
+                    }
+
+                    // Scroll to the top of the new page content
+                    window.scrollTo(0, 0);
+
+                } catch (error) {
+                    console.error('Error loading page:', error);
+                    // Optionally, you might want to redirect to the full page if AJAX load fails
+                    // window.location.href = path;
+                }
+            }
+        }
+    });
 });
