@@ -1,0 +1,12 @@
+/* css/input.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: canno;
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url("/css/font/MBF\ Canno\ Regular.otf") format("woff2");
+}

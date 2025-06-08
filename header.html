@@ -1,45 +1,44 @@
 <header class="bg-white shadow-md sticky top-0 z-50">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-        <!-- Logo -->
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center max-w-none">
         <div class="flex-shrink-0">
-            <a href="/index.html" class="block">
-                <img src="/img/aivariz-logo.png" alt="Aivariz Logo" class="w-1/2 rounded-md">
+            <a href="javascript:void(0);" data-path="/index.html" class="block nav-link">
+                <div class="flex items-center flex-none">
+                    <img src="/img/aivariz-logo.png" alt="Aivariz Logo" class="w-1/4 h-auto">
+                   <span class="text-black text-2xl font-bold ml-4 font-canno">AIVARIZ</span>
+                </div>
             </a>
         </div>
 
-        <!-- Navigation (Desktop) -->
-        <nav class="hidden md:flex space-x-8">
-            <a href="/index.html" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
+        <nav class="hidden md:flex space-x-8 font-canno"  >
+            <a href="javascript:void(0);" data-path="/index.html" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group nav-link">
                 Home
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
-            <a href="/solutions.html" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
+            <a href="javascript:void(0);" data-path="/solutions.html" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group nav-link">
                 Solutions
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
-            <a href="/aboutus.html" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
+            <a href="javascript:void(0);" data-path="/aboutus.html" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group nav-link">
                 About Us
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
-            <a href="/contact.html" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
+            <a href="javascript:void(0);" data-path="/contact.html" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group nav-link">
                 Contact Us
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
         </nav>
 
-        <!-- Mobile Menu Toggle -->
         <button id="mobile-menu-button" class="md:hidden text-gray-700 text-2xl focus:outline-none">
             <i class="fas fa-bars"></i>
         </button>
     </div>
 
-    <!-- Mobile Navigation (Hidden by default) -->
     <div id="mobile-menu" class="md:hidden bg-white shadow-lg py-4 hidden">
         <nav class="flex flex-col items-center space-y-4">
-            <a href="/index.html" class="text-gray-700 hover:text-blue-600 font-medium text-lg py-2 w-full text-center">Home</a>
-            <a href="/solutions.html" class="text-gray-700 hover:text-blue-600 font-medium text-lg py-2 w-full text-center">Solutions</a>
-            <a href="/aboutus.html" class="text-gray-700 hover:text-blue-600 font-medium text-lg py-2 w-full text-center">About Us</a>
-            <a href="/contact.html" class="text-gray-700 hover:text-blue-600 font-medium text-lg py-2 w-full text-center">Contact Us</a>
+            <a href="javascript:void(0);" data-path="/index.html" class="text-gray-700 hover:text-blue-600 font-medium text-lg py-2 w-full text-center nav-link">Home</a>
+            <a href="javascript:void(0);" data-path="/solutions.html" class="text-gray-700 hover:text-blue-600 font-medium text-lg py-2 w-full text-center nav-link">Solutions</a>
+            <a href="javascript:void(0);" data-path="/aboutus.html" class="text-gray-700 hover:text-blue-600 font-medium text-lg py-2 w-full text-center nav-link">About Us</a>
+            <a href="javascript:void(0);" data-path="/contact.html" class="text-gray-700 hover:text-blue-600 font-medium text-lg py-2 w-full text-center nav-link">Contact Us</a>
         </nav>
     </div>
 </header>

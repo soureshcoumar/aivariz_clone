@@ -1,28 +1,36 @@
-async function loadHtmlPartial(url, elementId) {
+async function loadHtmlPartial(path, elementId) {
     try {
-        const response = await fetch(url);
+        const response = await fetch(path);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const html = await response.text();
         const placeholder = document.getElementById(elementId);
-        if (placeholder) {
-            placeholder.innerHTML = html;
+        placeholder.innerHTML = html;
 
-            // Re-initialize mobile menu and other event listeners if they are part of the loaded content
-            // The existing script.js handles mobile menu and smooth scrolling.
-            // We just need to ensure it runs after the header is inserted.
-            // Since script.js is loaded *after* load_partials.js, it will already have access to the new DOM elements.
+        // After inserting HTML, initialize mobile menu and nav links if it's the header
+        if (elementId === 'header-placeholder') {
+            // Adding a small delay to ensure DOM is fully processed before running JS that accesses elements
+            setTimeout(() => {
+                if (window.initializeMobileMenu) { // Check if the global function exists
+                    window.initializeMobileMenu(); // Call the globally accessible function
+                } else {
+                    console.error("initializeMobileMenu function not found in global scope.");
+                }
+                // Call initializeNavLinks AFTER header content is in DOM and mobile menu is initialized
+                if (window.initializeNavLinks) { // Check if the global function exists
+                    window.initializeNavLinks();
+                } else {
+                    console.error("initializeNavLinks function not found in global scope.");
+                }
+            }, 100); // 100ms delay
         }
     } catch (error) {
-        console.error(`Error loading HTML partial ${url}:`, error);
+        console.error(`Could not load HTML partial from ${path}:`, error);
     }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Load header and footer HTML content
     await loadHtmlPartial('/header.html', 'header-placeholder');
     await loadHtmlPartial('/footer.html', 'footer-placeholder');
-
-    // After partials are loaded, ensure the main script (script.js)
-    // runs its DOMContentLoaded logic to attach event listeners.
-    // If script.js uses DOMContentLoaded, it will automatically run once the DOM is ready,
-    // including the injected content.
 });
