@@ -9,6 +9,14 @@ async function loadPartial(id, url) {
         const element = document.getElementById(id);
         if (element) {
             element.innerHTML = html;
+            // After header is loaded, initialize mobile menu
+            if (id === 'header-placeholder' && window.initializeMobileMenu) {
+                window.initializeMobileMenu();
+            }
+            // After header is loaded, initialize nav links (if they are part of the header)
+            if (id === 'header-placeholder' && window.initializeNavLinks) {
+                 window.initializeNavLinks();
+            }
         } else {
             console.warn(`Placeholder element with ID '${id}' not found.`);
         }

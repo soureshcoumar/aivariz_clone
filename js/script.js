@@ -146,100 +146,71 @@ function loadPageContent(path, pushState = true) {
 
 // /js/script.js
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Mobile menu toggle
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
+// Keep the event listener for nav-link clicks as it handles dynamic content loading.
+// The mobile menu and nav link initialization functions are now called from load_partials.js
+// after the header is inserted.
+document.body.addEventListener('click', async (event) => {
+    const navLink = event.target.closest('.nav-link');
+    if (navLink) {
+        event.preventDefault(); // Prevent default link behavior
+        const path = navLink.dataset.path; // Gets the path from data-path attribute
 
-    if (mobileMenuButton && mobileMenu) {
-        const navLinks = mobileMenu.querySelectorAll('a');
-
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-            const icon = mobileMenuButton.querySelector('i');
-            if (mobileMenu.classList.contains('hidden')) {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            } else {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            }
-        });
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-                const icon = mobileMenuButton.querySelector('i');
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            });
-        });
-    }
-
-    // Client-side navigation handler
-    document.body.addEventListener('click', async (event) => {
-        const navLink = event.target.closest('.nav-link');
-        if (navLink) {
-            event.preventDefault(); // Prevent default link behavior
-            const path = navLink.dataset.path; // Gets the path from data-path attribute
-
-            if (path) {
-                try {
-                    const response = await fetch(path);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const html = await response.text();
-
-                    // Use DOMParser to parse the fetched HTML string into a DOM document
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-
-                    // Find the current <main> element in the live DOM
-                    const currentMain = document.querySelector('main');
-                    // Find the new <main> element from the parsed fetched HTML
-                    const newMain = doc.querySelector('main');
-
-                    if (currentMain && newMain) {
-                        // Replace the old <main> element with the new one
-                        currentMain.replaceWith(newMain);
-                    } else {
-                        console.error('Main element not found in current document or fetched content.');
-                        return; // Stop execution if main element isn't found
-                    }
-
-                    // Update page title
-                    const newTitle = doc.querySelector('title') ? doc.querySelector('title').textContent : 'Aivariz';
-                    document.title = newTitle;
-
-                    // Re-load partials (header and footer) for the new page content
-                    // This function is exposed globally by load_partials.js
-                    if (window.loadAllPagePartials) {
-                        window.loadAllPagePartials();
-                    } else {
-                        console.warn('loadAllPagePartials function not found. Partials might not load.');
-                    }
-
-                    // Re-initialize AOS (Animate On Scroll) for the new content
-                    // Calling AOS.init() again will scan the newly inserted DOM for elements with data-aos attributes
-                    if (typeof AOS !== 'undefined') {
-                        AOS.init({
-                            duration: 800, // values from 0 to 3000, with step 50ms
-                            once: true, // whether animation should happen only once - while scrolling down
-                        });
-                    } else {
-                        console.warn('AOS library not found. Animations might not work.');
-                    }
-
-                    // Scroll to the top of the new page content
-                    window.scrollTo(0, 0);
-
-                } catch (error) {
-                    console.error('Error loading page:', error);
-                    // Optionally, you might want to redirect to the full page if AJAX load fails
-                    // window.location.href = path;
+        if (path) {
+            try {
+                const response = await fetch(path);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                const html = await response.text();
+
+                // Use DOMParser to parse the fetched HTML string into a DOM document
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Find the current <main> element in the live DOM
+                const currentMain = document.querySelector('main');
+                // Find the new <main> element from the parsed fetched HTML
+                const newMain = doc.querySelector('main');
+
+                if (currentMain && newMain) {
+                    // Replace the old <main> element with the new one
+                    currentMain.replaceWith(newMain);
+                } else {
+                    console.error('Main element not found in current document or fetched content.');
+                    return; // Stop execution if main element isn't found
+                }
+
+                // Update page title
+                const newTitle = doc.querySelector('title') ? doc.querySelector('title').textContent : 'Aivariz';
+                document.title = newTitle;
+
+                // Re-load partials (header and footer) for the new page content
+                // This function is exposed globally by load_partials.js
+                if (window.loadAllPagePartials) {
+                    window.loadAllPagePartials();
+                } else {
+                    console.warn('loadAllPagePartials function not found. Partials might not load.');
+                }
+
+                // Re-initialize AOS (Animate On Scroll) for the new content
+                // Calling AOS.init() again will scan the newly inserted DOM for elements with data-aos attributes
+                if (typeof AOS !== 'undefined') {
+                    AOS.init({
+                        duration: 800, // values from 0 to 3000, with step 50ms
+                        once: true, // whether animation should happen only once - while scrolling down
+                    });
+                } else {
+                    console.warn('AOS library not found. Animations might not work.');
+                }
+
+                // Scroll to the top of the new page content
+                window.scrollTo(0, 0);
+
+            } catch (error) {
+                console.error('Error loading page:', error);
+                // Optionally, you might want to redirect to the full page if AJAX load fails
+                // window.location.href = path;
             }
         }
-    });
+    }
 });
